@@ -1,9 +1,12 @@
 #include<iostream>
 #include<string>
 #include<Windows.h>
-#define MAX_SIZE 10
+#define MAX_SIZE 3
 using namespace std;
-
+void timer(int);
+void timer2(int);
+void name_sum_clear(string*);
+int ff = 0;
 class Kiosk { //Kiosk Class가 queue 역할
     int t_number;
     string name;
@@ -17,12 +20,14 @@ public:
     static int real_size(); //queue 현재 사이즈
     void Money(int Money, int table);
     void Name(string name, int talbe);
+    void clear_name();
     void push_drink();
     int t_num_show(); //현재 주문 현황 real_size를 이용하기
     void bring_menu();
     string Return_name();
     bool Menu_payment(char check_in);
     bool isfull();
+    bool isfull2();
     bool isEmpty();
 };
 int Kiosk::AllMoney = 0; //전체 매출액
@@ -36,13 +41,18 @@ Kiosk::Kiosk() {
 Kiosk::~Kiosk() {
 }
 void Kiosk::Money(int Money, int table) { //완료
+    this->queuemoney = 0;
     AllMoney += Money; //전체 매출액
     this->queuemoney += Money;
     this->t_number = table;
 }
 void Kiosk::Name(string name, int table) { //완료
+    this->name = " ";
     this->name = name;
     this->t_number = table;
+}
+void Kiosk::clear_name() {
+    this->name = "주문 완료하였습니다.";
 }
 int Kiosk::real_size() {
     return(front > rear ? front - rear : rear - front);
@@ -75,7 +85,13 @@ bool Kiosk::isEmpty() {
         return false;
 }
 bool Kiosk::isfull() {
-    if ((rear + 1) % MAX_SIZE == front)
+    if ((rear+1) % MAX_SIZE == front)
+        return true;
+    else
+        return false;
+}
+bool Kiosk::isfull2() {
+    if (front % MAX_SIZE == 0)
         return true;
     else
         return false;
@@ -99,6 +115,7 @@ class Menu{
     int number;
     string name;
     Kiosk* q;
+    Kiosk* ch;
 public:
     Menu(int size);
     Menu(int index_in, string menu_in, int price_in);
@@ -107,8 +124,9 @@ public:
     void Menu_select(int table_num_in,int price_in, string q_name);
     void push_drink();
     bool check_price(char C);
-    string bring_menu();
+    void bring_menu();
     void show();
+    ~Menu();
     //void Moneyshow();
 };
 Menu::Menu(int size) {
@@ -136,34 +154,41 @@ bool Menu::check_price(char C) {
     check = q[Kiosk::front].Menu_payment(C);
     return check;
 }
-string Menu::bring_menu() {
-    string Menu_name;
-    Menu_name = q[Kiosk::front].Return_name();
+void Menu::bring_menu() {
     q[Kiosk::front].bring_menu();
-    return Menu_name;
 }
 void Menu::show() {
-    for (int i = 0; i < Kiosk::front; i++)
+    if (ch->isfull2())
     {
-        cout << q[i].t_num_show() << "번 테이블 음료 나왔습니다 : " << q[i].Return_name() << endl;
+        for (int i = 0; i < MAX_SIZE; i++)
+        {
+            cout << q[i].t_num_show() << "번 테이블 음료 나왔습니다 : " << q[i].Return_name() << endl;
+            timer2(1);
+            q[i].clear_name();
+        }
     }
-}/*
-void Menu::Moneyshow() {
-    for (int i = 0; i < Kiosk::rear; i++)
+    else
     {
-        q[i].
+        for (int i = 0; i <MAX_SIZE; i++)
+        {
+            cout << q[i].t_num_show() << "번 테이블 음료 준비중입니다 : " << q[i].Return_name() << endl;
+        }
     }
-}*/
+  
+}
+Menu::~Menu() {
+    delete[]q;
+}
 void Menu::Menu_list() {
     cout << "###### MENU_LIST #####" << endl;
     cout << "Number   Menu   Price" << endl;
-    cout << "#1   Ice Americano   4500" << endl;
-    cout << "#2   Ice Latte   5000" << endl;
-    cout << "#3   Ice Tea   5000" << endl;
-    cout << "#4   Chamomile   6000" << endl;
-    cout << "#5   Caramel Macchiato   6500" << endl;
+    cout << "#1   아이스아메리카노   4500" << endl;
+    cout << "#2   아이스 라떼   5000" << endl;
+    cout << "#3   아이스티   5500" << endl;
+    cout << "#4   카모마일   6000" << endl;
+    cout << "#5   카라멜 마끼아또   6500" << endl;
     cout << "#####################" << endl;
-    cout << "1. 주문입력\n2. 주문현황\n3. 가게 매출\n4. 종료\n#####################" << endl;
+    cout << "1. 주문입력\n2. 주문현황\n3. 가게 매출\n4. 프로그램 종료\n#####################" << endl;
     cout << "번호를 입력하시오 >> ";
 }
 void name_sum_clear(string* name) {
@@ -192,7 +217,7 @@ void timer2(int time) {
     {
         endtime_ - starttime_;
         Sleep(1000);//1초
-        cout << ". ";
+        cout << endl;
         endtime_--;
         if (endtime_ - starttime_ == 0)
             break;
@@ -200,9 +225,9 @@ void timer2(int time) {
 }
 int main()
 {
-    Menu M[5] = { Menu(1,"Ice Americano",4500),Menu(2,"Ice Latte",5000),Menu(3,"Ice tea",5000),Menu(4,"Chamomile",6000),Menu(5,"Caramel Macchiato",6500) };
+    Menu M[5] = { Menu(1,"아이스 아메리카노",4500),Menu(2,"아이스 라떼",5000),Menu(3,"아이스티",5500),Menu(4,"카모마일",6000),Menu(5,"카라멜 마끼아또",6500) };
     Menu* M_ptr;
-    Menu q(10);
+    Menu q(MAX_SIZE);
     M_ptr = M;
     int select;
     int table_num; //손님 이름
@@ -210,9 +235,12 @@ int main()
     int cafe_num; //음료번호
     string name[10];
     string name_sum;
+    string comma = ", ";
+
     while (1)
     {
         int price = 0;
+        name_sum = ""; //초기화
         name_sum_clear(name); //name 초기화
         M_ptr->Menu_list(); //메뉴판 호출
         cin >> select; //번호 입력
@@ -238,7 +266,7 @@ int main()
             }
             else if (number == 1)
             {
-                string name_1;
+                string name_1 = "";
                 cout << "음료 번호와 메뉴 이름을 작성해주세요 >> ";
                 cin >> cafe_num;
                 getline(cin, name_1);
@@ -254,13 +282,12 @@ int main()
             int skip = q.check_price(check);
             if (skip == 1)
             {
-                string bring_menu = "";
-                bring_menu = q.bring_menu();
+                q.bring_menu();
                 cout << "결제가 완료 되었습니다." << endl;
                 timer(5);
                 cout << endl;
-                cout << table_num << "번 테이블 " << bring_menu << " 나왔습니다." << endl;
-                timer2(3);
+               // cout << table_num << "번 테이블 " << bring_menu << " 나왔습니다." << endl;
+                //timer2(3);
                 system("cls");
             }
             else if (skip == 0)
@@ -268,11 +295,17 @@ int main()
         }
         else if (select == 2)
         {
+            system("cls");
             q.show(); //실시간 주문현황
+            timer2(3);
+            system("cls");
         }
         else if (select == 3)
         {
-            cout << "전체 매출액 : " << Kiosk::AllMoney << endl;
+            system("cls");
+            cout << "전체 매출액 : " << Kiosk::AllMoney << " 원 입니다." << endl;
+            timer2(3);
+            system("cls");
         }
         else if (select == 4)
         {
