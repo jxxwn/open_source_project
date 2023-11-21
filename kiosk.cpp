@@ -180,15 +180,24 @@ Menu::~Menu() {
     delete[]q;
 }
 void Menu::Menu_list() {
-    cout << "###### MENU_LIST #####" << endl;
-    cout << "Number   Menu   Price" << endl;
-    cout << "#1   아이스아메리카노   4500" << endl;
-    cout << "#2   아이스 라떼   5000" << endl;
-    cout << "#3   아이스티   5500" << endl;
-    cout << "#4   카모마일   6000" << endl;
-    cout << "#5   카라멜 마끼아또   6500" << endl;
-    cout << "#####################" << endl;
-    cout << "1. 주문입력\n2. 주문현황\n3. 가게 매출\n4. 프로그램 종료\n#####################" << endl;
+    cout << "###########################################" << endl;
+    cout << endl;
+    cout << "##       ##   #######   ##    #   #       #" << endl;
+    cout << "# #     # #   #         # #   #   #       #" << endl;
+    cout << "#  #   #  #   #######   #  #  #   #       #" << endl;
+    cout << "#   # #   #   #         #   # #   #       #" << endl;
+    cout << "#    #    #   #######   #    ##   ######### " << endl;
+    cout << endl;
+    cout << "############################################" << endl;
+    cout << "#       Number     Menu    Price           #" << endl;
+    cout << "#       #1   아이스아메리카노   4500       #" << endl;
+    cout << "#       #2   아이스 라떼   5000            #" << endl;
+    cout << "#       #3   아이스티   5500               #" << endl;
+    cout << "#       #4   카모마일   6000               #" << endl;
+    cout << "#       #5   카라멜 마끼아또   6500        #" << endl;
+    cout << "############################################" << endl;
+    cout << endl;
+    cout << "1. 주문입력\n2. 주문현황\n3. 가게 매출\n4. 프로그램 종료\n" << endl;
     cout << "번호를 입력하시오 >> ";
 }
 void name_sum_clear(string* name) {
